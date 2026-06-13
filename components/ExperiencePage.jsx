@@ -325,8 +325,8 @@ function Hero({ t }) {
         </motion.div>
 
         <motion.ul className="hero-chips" variants={reveal}>
-          {t.hero.chips.map((chip) => (
-            <li key={chip}>{chip}</li>
+          {t.hero.chips.map((chip, index) => (
+            <li key={index}>{chip}</li>
           ))}
         </motion.ul>
       </motion.div>
@@ -357,9 +357,16 @@ function SectionHeading({ eyebrow, title, intro, centered = false }) {
   return (
     <Reveal className={`section-heading ${centered ? "centered" : ""}`}>
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className={Array.isArray(title) ? "title-lines" : undefined}>
+      <h2
+        className={Array.isArray(title) ? "title-lines" : undefined}
+        aria-label={Array.isArray(title) ? title.join(" ") : undefined}
+      >
         {Array.isArray(title)
-          ? title.map((line) => <span key={line}>{line}</span>)
+          ? title.map((line, index) => (
+              <span key={index} aria-hidden="true">
+                {line}
+              </span>
+            ))
           : title}
       </h2>
       {intro && <p className="section-intro">{intro}</p>}
@@ -389,8 +396,8 @@ function ExperienceSection({ t }) {
               <span>{t.experience.cardTitle}</span>
             </div>
             <dl>
-              {t.experience.details.map(([label, value]) => (
-                <div key={label}>
+              {t.experience.details.map(([label, value], index) => (
+                <div key={index}>
                   <dt>{label}</dt>
                   <dd>{value}</dd>
                 </div>
@@ -435,7 +442,7 @@ function RouteSection({ t }) {
           {t.route.stops.map((stop, index) => (
             <motion.article
               className="route-card"
-              key={stop.name}
+              key={index}
               initial={reduceMotion ? false : { opacity: 0, y: 38 }}
               whileInView={
                 reduceMotion ? undefined : { opacity: 1, y: 0 }
@@ -495,11 +502,9 @@ function IncludedSection({ t }) {
         />
         <motion.div
           className="included-grid"
-          initial={reduceMotion ? false : "hidden"}
-          whileInView={reduceMotion ? undefined : "visible"}
-          viewport={{ once: true, amount: 0.18 }}
+          initial={false}
+          animate="visible"
           variants={{
-            hidden: {},
             visible: { transition: { staggerChildren: 0.07 } },
           }}
         >
@@ -508,7 +513,7 @@ function IncludedSection({ t }) {
             return (
               <motion.article
                 className="included-card"
-                key={label}
+                key={iconKey}
                 variants={reduceMotion ? undefined : reveal}
                 whileHover={
                   reduceMotion
@@ -579,7 +584,7 @@ function GallerySection({ t }) {
         <div className="gallery-layout">
           {t.gallery.images.map(([alt, caption], index) => (
             <GalleryCard
-              key={caption}
+              key={index}
               src={gallerySources[index]}
               alt={alt}
               caption={caption}
@@ -611,8 +616,8 @@ function BeforeSection({ t }) {
             visible: { transition: { staggerChildren: 0.055 } },
           }}
         >
-          {t.before.items.map((item) => (
-            <motion.li key={item} variants={reveal}>
+          {t.before.items.map((item, index) => (
+            <motion.li key={index} variants={reveal}>
               <span>
                 <Check size={17} strokeWidth={2.2} aria-hidden="true" />
               </span>

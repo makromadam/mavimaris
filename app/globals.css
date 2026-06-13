@@ -452,7 +452,7 @@ section {
 .hero h1 {
   max-width: 100%;
   margin-bottom: 0.25rem;
-  font-size: clamp(3.2rem, 13.5vw, 10.5rem);
+  font-size: clamp(3rem, 11.5vw, 9rem);
   font-weight: 600;
   letter-spacing: -0.065em;
   line-height: 0.92;
@@ -708,6 +708,10 @@ section {
   perspective: 900px;
 }
 
+.experience-card {
+  animation: card-drift 6s ease-in-out infinite;
+}
+
 .experience-card-inner {
   position: relative;
   overflow: hidden;
@@ -742,6 +746,16 @@ section {
 
 .experience-card:hover .experience-card-inner {
   transform: rotateX(2deg) rotateY(-3deg) translateY(-5px);
+}
+
+@keyframes card-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
 }
 
 .card-topline {
@@ -1404,7 +1418,7 @@ section {
   }
 
   .hero h1 {
-    font-size: clamp(3.05rem, 16vw, 5.3rem);
+    font-size: clamp(2.8rem, 14vw, 4.65rem);
   }
 
   .hero-subtitle {
@@ -1646,7 +1660,8 @@ section {
   }
 
   .scroll-line,
-  .floating-whatsapp {
+  .floating-whatsapp,
+  .experience-card {
     animation: none;
   }
 }
