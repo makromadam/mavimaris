@@ -464,6 +464,7 @@ section {
   background: var(--color-navy);
 }
 
+.hero-image,
 .hero-video,
 .hero-overlay,
 .hero-reflection {
@@ -473,6 +474,7 @@ section {
   height: 100%;
 }
 
+.hero-image,
 .hero-video {
   z-index: -4;
   object-fit: cover;
