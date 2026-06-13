@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   AnimatePresence,
   motion,
+  useAnimationControls,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -20,8 +21,6 @@ import {
   Leaf,
   Menu,
   MessageCircle,
-  Pause,
-  Play,
   Ship,
   Sun,
   Umbrella,
@@ -321,66 +320,36 @@ function Header({ language, setLanguage, t }) {
 }
 
 function Hero({ t }) {
-  const videoRef = useRef(null);
-  const reduceMotion = useReducedMotion();
-  const [manualPlayback, setManualPlayback] = useState(null);
-  const isPlaying = manualPlayback ?? !reduceMotion;
-
-  useEffect(() => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.play().catch(() => {});
-    } else {
-      videoRef.current.pause();
-    }
-  }, [isPlaying]);
-
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
-      <video
-        ref={videoRef}
-        className="hero-video"
-        autoPlay={!reduceMotion}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster="/images/cove-boat.webp"
+      <Image
+        src="/images/hero.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="hero-image"
         aria-hidden="true"
-        tabIndex={-1}
-      >
-        <source src="/videos/mavimaris-sea.mp4" type="video/mp4" />
-      </video>
+      />
       <div className="hero-overlay" aria-hidden="true" />
       <div className="hero-reflection" aria-hidden="true" />
 
-      <motion.div
-        className="hero-content container"
-        initial={reduceMotion ? false : "hidden"}
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.12, delayChildren: 0.16 },
-          },
-        }}
-      >
-        <motion.h1 id="hero-title" variants={reveal}>
+      <div className="hero-content container">
+        <h1 id="hero-title">
           {t.hero.title}
-        </motion.h1>
-        <motion.p className="hero-subtitle" variants={reveal}>
+        </h1>
+        <p className="hero-subtitle">
           {t.hero.subtitle}
-        </motion.p>
-        <motion.p className="hero-description" variants={reveal}>
+        </p>
+        <p className="hero-description">
           {Array.isArray(t.hero.description)
             ? t.hero.description.map((line) => (
                 <span key={line}>{line}</span>
               ))
             : t.hero.description}
-        </motion.p>
+        </p>
 
-        <motion.div className="hero-actions" variants={reveal}>
+        <div className="hero-actions">
           <MagneticLink
             href={WHATSAPP_URL}
             className="button button-primary button-shine"
@@ -393,27 +362,14 @@ function Hero({ t }) {
             {t.hero.explore}
             <ArrowDown aria-hidden="true" />
           </MagneticLink>
-        </motion.div>
+        </div>
 
-        <motion.ul className="hero-chips" variants={reveal}>
+        <ul className="hero-chips">
           {t.hero.chips.map((chip, index) => (
             <li key={index}>{chip}</li>
           ))}
-        </motion.ul>
-      </motion.div>
-
-      <button
-        type="button"
-        className="video-control"
-        onClick={() => setManualPlayback(!isPlaying)}
-        aria-label={isPlaying ? t.videoPause : t.videoPlay}
-      >
-        {isPlaying ? (
-          <Pause size={16} aria-hidden="true" />
-        ) : (
-          <Play size={16} aria-hidden="true" />
-        )}
-      </button>
+        </ul>
+      </div>
 
       <a className="scroll-indicator" href="#experience">
         <span>{t.hero.scroll}</span>
@@ -446,6 +402,26 @@ function SectionHeading({ eyebrow, title, intro, centered = false }) {
 }
 
 function ExperienceSection({ t }) {
+  const reduceMotion = useReducedMotion();
+  const cardControls = useAnimationControls();
+
+  const playCardMotion = () => {
+    if (reduceMotion) return;
+
+    cardControls.stop();
+    cardControls.start({
+      rotateX: [0, 10, -5, 0],
+      rotateY: [0, -11, 6, 0],
+      scale: [1, 0.96, 1.035, 1],
+      y: [0, -10, 4, 0],
+      transition: {
+        duration: 0.72,
+        times: [0, 0.28, 0.64, 1],
+        ease: "easeInOut",
+      },
+    });
+  };
+
   return (
     <section className="section experience-section" id="experience">
       <div className="ambient-blob blob-one" aria-hidden="true" />
@@ -461,7 +437,18 @@ function ExperienceSection({ t }) {
         </div>
 
         <Reveal className="experience-card scene-3d" delay={0.12}>
-          <div className="experience-card-inner">
+          <motion.div
+            className="experience-card-inner"
+            animate={cardControls}
+            whileHover={
+              reduceMotion
+                ? undefined
+                : { rotateX: 5, rotateY: -7, scale: 1.025, y: -7 }
+            }
+            whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            onTap={playCardMotion}
+          >
             <div className="card-topline">
               <Ship aria-hidden="true" />
               <span>{t.experience.cardTitle}</span>
@@ -474,7 +461,7 @@ function ExperienceSection({ t }) {
                 </div>
               ))}
             </dl>
-          </div>
+          </motion.div>
         </Reveal>
       </div>
     </section>

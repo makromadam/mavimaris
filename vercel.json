@@ -1,14 +1,8 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "env": {
-    "NEXT_PUBLIC_APP_ENV": "@vercel/env"
-  },
+  "framework": "nextjs",
   "git": {
     "deploymentEnabled": {
       "main": true
     }
-  },
-  "crons": []
+  }
 }

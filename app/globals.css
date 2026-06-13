@@ -6,12 +6,16 @@
   --color-text-soft: #4c6670;
   --color-navy: #062c3c;
   --color-navy-2: #0a4254;
-  --color-aqua: #21c6c7;
-  --color-aqua-dark: #087f88;
-  --color-sky: #9de8e5;
+  --color-aqua: #0377c1;
+  --color-aqua-dark: #0377c1;
+  --color-sky: #0377c1;
+  --color-aqua-rgb: 3, 119, 193;
   --color-border: rgba(7, 85, 101, 0.13);
   --color-focus: #f5c84b;
-  --gradient-aqua: linear-gradient(135deg, #11b9bd, #69dfd8);
+  --gradient-aqua: linear-gradient(135deg, #0377c1, #0377c1);
+  --gradient-title: linear-gradient(180deg, #0377c1 0%, #02558d 100%);
+  --gradient-title-light: linear-gradient(180deg, #ffffff 0%, #b8dcf5 100%);
+  --gradient-footer: linear-gradient(180deg, #0377c1 0%, #02558d 48%, #012b48 100%);
   --gradient-card: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.88),
@@ -163,7 +167,7 @@ section {
 .section-heading h2 {
   width: fit-content;
   color: var(--color-aqua-dark);
-  background: var(--gradient-aqua);
+  background: var(--gradient-title);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -229,20 +233,20 @@ section {
 .site-header.scrolled {
   border-color: rgba(255, 255, 255, 0.48);
   background: var(--gradient-aqua);
-  color: var(--color-navy);
-  box-shadow: 0 16px 42px rgba(11, 108, 111, 0.24);
+  color: white;
+  box-shadow: 0 16px 42px rgba(var(--color-aqua-rgb), 0.24);
 }
 
 .site-header.scrolled .brand-subtitle,
 .site-header.scrolled .desktop-nav a {
-  color: rgba(6, 44, 60, 0.76);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .site-header.scrolled .language-switch,
 .site-header.scrolled .menu-toggle {
-  border-color: rgba(6, 44, 60, 0.18);
-  background: rgba(255, 255, 255, 0.22);
-  color: var(--color-navy);
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
 }
 
 .brand-lockup,
@@ -387,7 +391,7 @@ section {
 
 .language-option.active {
   background: var(--gradient-aqua);
-  color: var(--color-navy);
+  color: white;
 }
 
 .language-option svg {
@@ -441,7 +445,7 @@ section {
   gap: 0.65rem;
   margin-top: 0.3rem;
   background: var(--gradient-aqua);
-  color: var(--color-navy);
+  color: white;
   font-weight: 600;
 }
 
@@ -465,7 +469,6 @@ section {
 }
 
 .hero-image,
-.hero-video,
 .hero-overlay,
 .hero-reflection {
   position: absolute;
@@ -474,8 +477,7 @@ section {
   height: 100%;
 }
 
-.hero-image,
-.hero-video {
+.hero-image {
   z-index: -4;
   object-fit: cover;
 }
@@ -491,8 +493,8 @@ section {
   z-index: -2;
   opacity: 0.42;
   background:
-    radial-gradient(circle at 18% 30%, rgba(90, 238, 226, 0.32), transparent 24%),
-    radial-gradient(circle at 83% 68%, rgba(30, 170, 205, 0.22), transparent 26%);
+    radial-gradient(circle at 18% 30%, rgba(var(--color-aqua-rgb), 0.32), transparent 24%),
+    radial-gradient(circle at 83% 68%, rgba(var(--color-aqua-rgb), 0.22), transparent 26%);
   mix-blend-mode: screen;
 }
 
@@ -509,11 +511,15 @@ section {
 .hero h1 {
   max-width: 100%;
   margin-bottom: 0.25rem;
+  background: var(--gradient-title-light);
+  background-clip: text;
+  -webkit-background-clip: text;
   font-size: clamp(3rem, 11.5vw, 9rem);
   font-weight: 600;
   letter-spacing: -0.065em;
   line-height: 0.92;
   text-shadow: 0 18px 60px rgba(0, 19, 28, 0.24);
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
@@ -569,14 +575,14 @@ section {
 }
 
 .button-primary {
-  background: white;
-  color: var(--color-navy);
+  background: var(--color-aqua);
+  color: white;
   box-shadow: 0 16px 40px rgba(0, 21, 31, 0.2);
 }
 
 .button-primary:hover {
-  background: #d4fffb;
-  box-shadow: 0 18px 45px rgba(33, 198, 199, 0.24);
+  background: #0377c1;
+  box-shadow: 0 18px 45px rgba(var(--color-aqua-rgb), 0.3);
 }
 
 .button-ghost {
@@ -640,23 +646,6 @@ section {
   backdrop-filter: blur(14px);
 }
 
-.video-control {
-  position: absolute;
-  z-index: 4;
-  bottom: 2rem;
-  left: clamp(1rem, 3vw, 2.5rem);
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 50%;
-  background: rgba(4, 42, 54, 0.42);
-  color: white;
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-}
-
 .scroll-indicator {
   position: absolute;
   z-index: 4;
@@ -714,17 +703,19 @@ section {
   overflow: clip;
   padding-top: calc(var(--section-space) * 0.8);
   background: var(--gradient-aqua);
-  color: var(--color-navy);
+  color: white;
 }
 
 .experience-section .section-heading h2 {
-  color: var(--color-navy);
-  background: none;
-  -webkit-text-fill-color: currentColor;
+  color: white;
+  background: var(--gradient-title-light);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .experience-section .eyebrow {
-  color: rgba(6, 44, 60, 0.72);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .experience-grid {
@@ -737,7 +728,7 @@ section {
 .experience-copy {
   max-width: 650px;
   margin-bottom: 0;
-  color: rgba(6, 44, 60, 0.78);
+  color: rgba(255, 255, 255, 0.84);
   font-size: clamp(1.05rem, 1.8vw, 1.3rem);
   line-height: 1.8;
 }
@@ -762,11 +753,11 @@ section {
 }
 
 .scene-3d {
-  perspective: 900px;
+  perspective: 1100px;
 }
 
 .experience-card {
-  animation: card-drift 6s ease-in-out infinite;
+  animation: card-drift 3.8s ease-in-out infinite;
 }
 
 .experience-card-inner {
@@ -779,9 +770,11 @@ section {
     linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(232, 255, 253, 0.72)),
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.48), transparent 40%);
   box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  touch-action: manipulation;
   backdrop-filter: blur(20px);
   transform-style: preserve-3d;
-  transition: transform 0.65s var(--ease);
+  will-change: transform;
 }
 
 .experience-card-inner::after {
@@ -801,17 +794,13 @@ section {
   transform: rotate(22deg);
 }
 
-.experience-card:hover .experience-card-inner {
-  transform: rotateX(2deg) rotateY(-3deg) translateY(-5px);
-}
-
 @keyframes card-drift {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(8px);
   }
   50% {
-    transform: translateY(-7px);
+    transform: translateY(-16px);
   }
 }
 
@@ -827,6 +816,7 @@ section {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  transform: translateZ(26px);
 }
 
 .card-topline svg {
@@ -838,6 +828,7 @@ section {
   position: relative;
   z-index: 1;
   margin: 0;
+  transform: translateZ(16px);
 }
 
 .experience-card dl > div {
@@ -871,7 +862,7 @@ section {
   overflow: clip;
   background:
     linear-gradient(180deg, #f4fbfa, #fbfdfc 75%),
-    radial-gradient(circle at 20% 20%, rgba(33, 198, 199, 0.15), transparent 30%);
+    radial-gradient(circle at 20% 20%, rgba(var(--color-aqua-rgb), 0.15), transparent 30%);
 }
 
 .route-timeline {
@@ -888,13 +879,13 @@ section {
   width: 2px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(8, 127, 136, 0.12);
+  background: rgba(var(--color-aqua-rgb), 0.12);
 }
 
 .timeline-progress {
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, var(--color-aqua), #0b7e9b);
+  background: var(--color-aqua);
   transform-origin: top;
 }
 
@@ -944,7 +935,7 @@ section {
 .route-image::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(8, 127, 136, 0.14));
+  background: linear-gradient(135deg, transparent, rgba(var(--color-aqua-rgb), 0.14));
   content: "";
 }
 
@@ -980,6 +971,7 @@ section {
 
 .route-card h3 {
   margin-bottom: 0.7rem;
+  color: #0377c1;
 }
 
 .route-card p {
@@ -1010,7 +1002,7 @@ section {
   left: -10%;
   width: 380px;
   height: 380px;
-  background: rgba(33, 198, 199, 0.14);
+  background: rgba(var(--color-aqua-rgb), 0.14);
 }
 
 .glow-right {
@@ -1050,8 +1042,8 @@ section {
   place-items: center;
   border-radius: 16px;
   background: var(--gradient-aqua);
-  color: var(--color-navy);
-  box-shadow: 0 12px 30px rgba(33, 198, 199, 0.18);
+  color: white;
+  box-shadow: 0 12px 30px rgba(var(--color-aqua-rgb), 0.18);
 }
 
 .included-icon svg {
@@ -1082,7 +1074,7 @@ section {
   left: -8%;
   width: 32vw;
   height: 32vw;
-  background: rgba(65, 216, 207, 0.16);
+  background: rgba(var(--color-aqua-rgb), 0.16);
 }
 
 .gallery-blob-two {
@@ -1194,7 +1186,7 @@ section {
   align-items: center;
   gap: 0.9rem;
   padding: 1rem;
-  border: 1px solid rgba(8, 127, 136, 0.12);
+  border: 1px solid rgba(var(--color-aqua-rgb), 0.12);
   border-radius: 17px;
   background: rgba(255, 255, 255, 0.72);
   color: #294f5b;
@@ -1208,8 +1200,8 @@ section {
   flex: 0 0 32px;
   place-items: center;
   border-radius: 50%;
-  background: #d5f6f3;
-  color: var(--color-aqua-dark);
+  background: var(--color-aqua);
+  color: white;
 }
 
 /* Final CTA */
@@ -1251,12 +1243,16 @@ section {
 }
 
 .final-content .eyebrow {
-  color: #b9fffa;
+  color: #0377c1;
 }
 
 .final-content h2 {
   max-width: 12ch;
+  background: var(--gradient-title-light);
+  background-clip: text;
+  -webkit-background-clip: text;
   font-size: clamp(2.5rem, 5.8vw, 5.2rem);
+  -webkit-text-fill-color: transparent;
 }
 
 .final-content > p:not(.eyebrow) {
@@ -1279,7 +1275,7 @@ section {
 
 .site-footer {
   padding: 4rem 0 1.4rem;
-  background: var(--color-navy);
+  background: var(--gradient-footer);
   color: white;
 }
 
@@ -1351,10 +1347,10 @@ section {
   border: 1px solid rgba(255, 255, 255, 0.46);
   border-radius: 999px;
   background: var(--gradient-aqua);
-  color: var(--color-navy);
+  color: white;
   box-shadow:
-    0 14px 34px rgba(11, 108, 111, 0.24),
-    0 0 0 0 rgba(33, 198, 199, 0.3);
+    0 14px 34px rgba(var(--color-aqua-rgb), 0.24),
+    0 0 0 0 rgba(var(--color-aqua-rgb), 0.3);
   font-size: 0.78rem;
   font-weight: 700;
   animation: whatsapp-pulse 3s ease-out infinite;
@@ -1369,18 +1365,18 @@ section {
   0%,
   45% {
     box-shadow:
-      0 14px 34px rgba(11, 108, 111, 0.24),
-      0 0 0 0 rgba(33, 198, 199, 0.3);
+      0 14px 34px rgba(var(--color-aqua-rgb), 0.24),
+      0 0 0 0 rgba(var(--color-aqua-rgb), 0.3);
   }
   75% {
     box-shadow:
-      0 14px 34px rgba(11, 108, 111, 0.24),
-      0 0 0 13px rgba(33, 198, 199, 0);
+      0 14px 34px rgba(var(--color-aqua-rgb), 0.24),
+      0 0 0 13px rgba(var(--color-aqua-rgb), 0);
   }
   100% {
     box-shadow:
-      0 14px 34px rgba(11, 108, 111, 0.24),
-      0 0 0 0 rgba(33, 198, 199, 0);
+      0 14px 34px rgba(var(--color-aqua-rgb), 0.24),
+      0 0 0 0 rgba(var(--color-aqua-rgb), 0);
   }
 }
 
@@ -1508,10 +1504,6 @@ section {
 
   .scroll-indicator {
     display: none;
-  }
-
-  .video-control {
-    bottom: 1.2rem;
   }
 
   .experience-grid {

@@ -35,7 +35,7 @@ export const translations = {
     },
     experience: {
       eyebrow: "The experience",
-      title: ["A Day That Slows", "Down on the Sea"],
+      title: ["A Day That", "Slows Down", "on the Sea"],
       text:
         "Leave the harbour and let the Marmaris coast set the pace. Sunbathe between pine-framed bays, slip into clear water, share a relaxed BBQ lunch and spend the day moving gently with the sea.",
       cardTitle: "Your day at a glance",
