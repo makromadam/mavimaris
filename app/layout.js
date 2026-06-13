@@ -1,4 +1,4 @@
-import { Poppins } from "next/font/google";
+import { Montserrat, Poppins } from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -6,6 +6,13 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-poppins",
+});
+
+const montserrat = Montserrat({
+  subsets: ["cyrillic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-montserrat",
 });
 
 const siteUrl =
@@ -42,7 +49,7 @@ export const metadata = {
       },
     ],
     locale: "en_US",
-    alternateLocale: "tr_TR",
+    alternateLocale: ["ru_RU", "it_IT", "tr_TR"],
   },
   twitter: {
     card: "summary_large_image",
@@ -97,14 +104,17 @@ const structuredData = {
       "@type": "ContactPoint",
       telephone: "+90 544 270 11 57",
       contactType: "reservations",
-      availableLanguage: ["English", "Turkish"],
+      availableLanguage: ["English", "Russian", "Italian", "Turkish"],
     },
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html
+      lang="en"
+      className={`${poppins.variable} ${montserrat.variable}`}
+    >
       <body className={poppins.className}>
         {children}
         <script

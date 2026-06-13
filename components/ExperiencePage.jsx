@@ -14,6 +14,7 @@ import {
   ArrowDown,
   Camera,
   Check,
+  ChevronDown,
   Clock,
   GlassWater,
   Leaf,
@@ -44,6 +45,8 @@ const navigationKeys = [
   "before",
   "contact",
 ];
+
+const languageCodes = ["en", "ru", "it", "tr"];
 
 const includedIcons = {
   utensils: Utensils,
@@ -138,10 +141,45 @@ function MagneticLink({ href, children, className = "", ariaLabel }) {
 
 function Header({ language, setLanguage, t }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
+  const languageRef = useRef(null);
 
   const closeMenu = () => setMenuOpen(false);
+
+  const selectLanguage = (code) => {
+    setLanguage(code);
+    setLanguageOpen(false);
+  };
+
+  useEffect(() => {
+    const closeLanguageMenu = (event) => {
+      if (
+        event.type === "keydown" &&
+        event.key !== "Escape"
+      ) {
+        return;
+      }
+
+      if (
+        event.type === "pointerdown" &&
+        languageRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+
+      setLanguageOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeLanguageMenu);
+    document.addEventListener("keydown", closeLanguageMenu);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeLanguageMenu);
+      document.removeEventListener("keydown", closeLanguageMenu);
+    };
+  }, []);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -150,7 +188,7 @@ function Header({ language, setLanguage, t }) {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 72);
 
-      if (menuOpen || currentScrollY < 100) {
+      if (menuOpen || languageOpen || currentScrollY < 100) {
         setHeaderHidden(false);
       } else if (currentScrollY > lastScrollY) {
         setHeaderHidden(true);
@@ -164,7 +202,7 @@ function Header({ language, setLanguage, t }) {
     updateHeader();
     window.addEventListener("scroll", updateHeader, { passive: true });
     return () => window.removeEventListener("scroll", updateHeader);
-  }, [menuOpen]);
+  }, [languageOpen, menuOpen]);
 
   return (
     <header
@@ -187,21 +225,54 @@ function Header({ language, setLanguage, t }) {
 
       <div className="header-actions">
         <div
-          className="language-toggle"
-          role="group"
-          aria-label={t.languageLabel}
+          className={`language-selector ${languageOpen ? "open" : ""}`}
+          ref={languageRef}
         >
-          {["en", "tr"].map((code) => (
-            <button
-              key={code}
-              type="button"
-              className={language === code ? "active" : ""}
-              aria-pressed={language === code}
-              onClick={() => setLanguage(code)}
-            >
-              {code.toUpperCase()}
-            </button>
-          ))}
+          <button
+            type="button"
+            className="language-switch"
+            aria-label={t.languageLabel}
+            aria-expanded={languageOpen}
+            aria-haspopup="menu"
+            aria-controls="language-options"
+            onClick={() => setLanguageOpen((current) => !current)}
+          >
+            <span>{language.toUpperCase()}</span>
+            <ChevronDown aria-hidden="true" />
+          </button>
+
+          <AnimatePresence>
+            {languageOpen && (
+              <motion.div
+                id="language-options"
+                className="language-menu"
+                role="menu"
+                aria-label={t.languageLabel}
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
+              >
+                {languageCodes.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={language === code}
+                    className={`language-option ${
+                      language === code ? "active" : ""
+                    }`}
+                    onClick={() => selectLanguage(code)}
+                  >
+                    <span>{code.toUpperCase()}</span>
+                    {language === code && (
+                      <Check size={15} aria-hidden="true" />
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <button
