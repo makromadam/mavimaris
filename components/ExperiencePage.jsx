@@ -14,6 +14,7 @@ import {
   ArrowDown,
   Camera,
   Check,
+  ChevronDown,
   Clock,
   GlassWater,
   Leaf,
@@ -22,7 +23,6 @@ import {
   Pause,
   Play,
   Ship,
-  Sparkles,
   Sun,
   Umbrella,
   Utensils,
@@ -45,6 +45,8 @@ const navigationKeys = [
   "before",
   "contact",
 ];
+
+const languageCodes = ["en", "ru", "it", "tr"];
 
 const includedIcons = {
   utensils: Utensils,
@@ -139,11 +141,75 @@ function MagneticLink({ href, children, className = "", ariaLabel }) {
 
 function Header({ language, setLanguage, t }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const languageRef = useRef(null);
 
   const closeMenu = () => setMenuOpen(false);
 
+  const selectLanguage = (code) => {
+    setLanguage(code);
+    setLanguageOpen(false);
+  };
+
+  useEffect(() => {
+    const closeLanguageMenu = (event) => {
+      if (
+        event.type === "keydown" &&
+        event.key !== "Escape"
+      ) {
+        return;
+      }
+
+      if (
+        event.type === "pointerdown" &&
+        languageRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+
+      setLanguageOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeLanguageMenu);
+    document.addEventListener("keydown", closeLanguageMenu);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeLanguageMenu);
+      document.removeEventListener("keydown", closeLanguageMenu);
+    };
+  }, []);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const updateHeader = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 72);
+
+      if (menuOpen || languageOpen || currentScrollY < 100) {
+        setHeaderHidden(false);
+      } else if (currentScrollY > lastScrollY) {
+        setHeaderHidden(true);
+      } else if (currentScrollY < lastScrollY) {
+        setHeaderHidden(false);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, [languageOpen, menuOpen]);
+
   return (
-    <header className="site-header">
+    <header
+      className={`site-header ${scrolled ? "scrolled" : ""} ${
+        headerHidden ? "header-hidden" : ""
+      }`}
+    >
       <a className="brand-lockup" href="#top" aria-label="MAVIMARIS home">
         <span className="brand-name">MAVIMARIS</span>
         <span className="brand-subtitle">Marmaris Boat Experience</span>
@@ -159,21 +225,54 @@ function Header({ language, setLanguage, t }) {
 
       <div className="header-actions">
         <div
-          className="language-toggle"
-          role="group"
-          aria-label={t.languageLabel}
+          className={`language-selector ${languageOpen ? "open" : ""}`}
+          ref={languageRef}
         >
-          {["en", "tr"].map((code) => (
-            <button
-              key={code}
-              type="button"
-              className={language === code ? "active" : ""}
-              aria-pressed={language === code}
-              onClick={() => setLanguage(code)}
-            >
-              {code.toUpperCase()}
-            </button>
-          ))}
+          <button
+            type="button"
+            className="language-switch"
+            aria-label={t.languageLabel}
+            aria-expanded={languageOpen}
+            aria-haspopup="menu"
+            aria-controls="language-options"
+            onClick={() => setLanguageOpen((current) => !current)}
+          >
+            <span>{language.toUpperCase()}</span>
+            <ChevronDown aria-hidden="true" />
+          </button>
+
+          <AnimatePresence>
+            {languageOpen && (
+              <motion.div
+                id="language-options"
+                className="language-menu"
+                role="menu"
+                aria-label={t.languageLabel}
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
+              >
+                {languageCodes.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={language === code}
+                    className={`language-option ${
+                      language === code ? "active" : ""
+                    }`}
+                    onClick={() => selectLanguage(code)}
+                  >
+                    <span>{code.toUpperCase()}</span>
+                    {language === code && (
+                      <Check size={15} aria-hidden="true" />
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <button
@@ -267,10 +366,6 @@ function Hero({ t }) {
           },
         }}
       >
-        <motion.p className="eyebrow hero-eyebrow" variants={reveal}>
-          <Sparkles size={14} aria-hidden="true" />
-          {t.hero.eyebrow}
-        </motion.p>
         <motion.h1 id="hero-title" variants={reveal}>
           {t.hero.title}
         </motion.h1>
@@ -278,7 +373,11 @@ function Hero({ t }) {
           {t.hero.subtitle}
         </motion.p>
         <motion.p className="hero-description" variants={reveal}>
-          {t.hero.description}
+          {Array.isArray(t.hero.description)
+            ? t.hero.description.map((line) => (
+                <span key={line}>{line}</span>
+              ))
+            : t.hero.description}
         </motion.p>
 
         <motion.div className="hero-actions" variants={reveal}>
@@ -297,8 +396,8 @@ function Hero({ t }) {
         </motion.div>
 
         <motion.ul className="hero-chips" variants={reveal}>
-          {t.hero.chips.map((chip) => (
-            <li key={chip}>{chip}</li>
+          {t.hero.chips.map((chip, index) => (
+            <li key={index}>{chip}</li>
           ))}
         </motion.ul>
       </motion.div>
@@ -329,7 +428,18 @@ function SectionHeading({ eyebrow, title, intro, centered = false }) {
   return (
     <Reveal className={`section-heading ${centered ? "centered" : ""}`}>
       <p className="eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+      <h2
+        className={Array.isArray(title) ? "title-lines" : undefined}
+        aria-label={Array.isArray(title) ? title.join(" ") : undefined}
+      >
+        {Array.isArray(title)
+          ? title.map((line, index) => (
+              <span key={index} aria-hidden="true">
+                {line}
+              </span>
+            ))
+          : title}
+      </h2>
       {intro && <p className="section-intro">{intro}</p>}
     </Reveal>
   );
@@ -357,8 +467,8 @@ function ExperienceSection({ t }) {
               <span>{t.experience.cardTitle}</span>
             </div>
             <dl>
-              {t.experience.details.map(([label, value]) => (
-                <div key={label}>
+              {t.experience.details.map(([label, value], index) => (
+                <div key={index}>
                   <dt>{label}</dt>
                   <dd>{value}</dd>
                 </div>
@@ -403,7 +513,7 @@ function RouteSection({ t }) {
           {t.route.stops.map((stop, index) => (
             <motion.article
               className="route-card"
-              key={stop.name}
+              key={index}
               initial={reduceMotion ? false : { opacity: 0, y: 38 }}
               whileInView={
                 reduceMotion ? undefined : { opacity: 1, y: 0 }
@@ -463,11 +573,9 @@ function IncludedSection({ t }) {
         />
         <motion.div
           className="included-grid"
-          initial={reduceMotion ? false : "hidden"}
-          whileInView={reduceMotion ? undefined : "visible"}
-          viewport={{ once: true, amount: 0.18 }}
+          initial={false}
+          animate="visible"
           variants={{
-            hidden: {},
             visible: { transition: { staggerChildren: 0.07 } },
           }}
         >
@@ -476,7 +584,7 @@ function IncludedSection({ t }) {
             return (
               <motion.article
                 className="included-card"
-                key={label}
+                key={iconKey}
                 variants={reduceMotion ? undefined : reveal}
                 whileHover={
                   reduceMotion
@@ -547,7 +655,7 @@ function GallerySection({ t }) {
         <div className="gallery-layout">
           {t.gallery.images.map(([alt, caption], index) => (
             <GalleryCard
-              key={caption}
+              key={index}
               src={gallerySources[index]}
               alt={alt}
               caption={caption}
@@ -579,8 +687,8 @@ function BeforeSection({ t }) {
             visible: { transition: { staggerChildren: 0.055 } },
           }}
         >
-          {t.before.items.map((item) => (
-            <motion.li key={item} variants={reveal}>
+          {t.before.items.map((item, index) => (
+            <motion.li key={index} variants={reveal}>
               <span>
                 <Check size={17} strokeWidth={2.2} aria-hidden="true" />
               </span>
