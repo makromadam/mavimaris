@@ -211,7 +211,15 @@ section {
     background 0.35s var(--ease),
     border-color 0.35s var(--ease),
     box-shadow 0.35s var(--ease),
-    color 0.35s var(--ease);
+    color 0.35s var(--ease),
+    opacity 0.3s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.site-header.header-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(-100% - 2rem));
 }
 
 .site-header.scrolled {
@@ -648,6 +656,18 @@ section {
 .experience-section {
   overflow: clip;
   padding-top: calc(var(--section-space) * 0.8);
+  background: var(--gradient-aqua);
+  color: var(--color-navy);
+}
+
+.experience-section .section-heading h2 {
+  color: var(--color-navy);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.experience-section .eyebrow {
+  color: rgba(6, 44, 60, 0.72);
 }
 
 .experience-grid {
@@ -660,7 +680,7 @@ section {
 .experience-copy {
   max-width: 650px;
   margin-bottom: 0;
-  color: var(--color-text-soft);
+  color: rgba(6, 44, 60, 0.78);
   font-size: clamp(1.05rem, 1.8vw, 1.3rem);
   line-height: 1.8;
 }
@@ -680,7 +700,7 @@ section {
   height: 36vw;
   max-width: 560px;
   max-height: 560px;
-  background: rgba(102, 225, 219, 0.15);
+  background: rgba(255, 255, 255, 0.22);
   filter: blur(80px);
 }
 
@@ -692,11 +712,11 @@ section {
   position: relative;
   overflow: hidden;
   padding: clamp(1.4rem, 4vw, 2.4rem);
-  border: 1px solid rgba(8, 127, 136, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(209, 245, 243, 0.74)),
-    radial-gradient(circle at top right, rgba(33, 198, 199, 0.28), transparent 40%);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(232, 255, 253, 0.72)),
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.48), transparent 40%);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(20px);
   transform-style: preserve-3d;

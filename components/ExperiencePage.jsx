@@ -139,18 +139,39 @@ function MagneticLink({ href, children, className = "", ariaLabel }) {
 function Header({ language, setLanguage, t }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [headerHidden, setHeaderHidden] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
-    const updateHeader = () => setScrolled(window.scrollY > 72);
+    let lastScrollY = window.scrollY;
+
+    const updateHeader = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 72);
+
+      if (menuOpen || currentScrollY < 100) {
+        setHeaderHidden(false);
+      } else if (currentScrollY > lastScrollY) {
+        setHeaderHidden(true);
+      } else if (currentScrollY < lastScrollY) {
+        setHeaderHidden(false);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
     updateHeader();
     window.addEventListener("scroll", updateHeader, { passive: true });
     return () => window.removeEventListener("scroll", updateHeader);
-  }, []);
+  }, [menuOpen]);
 
   return (
-    <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
+    <header
+      className={`site-header ${scrolled ? "scrolled" : ""} ${
+        headerHidden ? "header-hidden" : ""
+      }`}
+    >
       <a className="brand-lockup" href="#top" aria-label="MAVIMARIS home">
         <span className="brand-name">MAVIMARIS</span>
         <span className="brand-subtitle">Marmaris Boat Experience</span>
