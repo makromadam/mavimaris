@@ -163,6 +163,8 @@ export const translations = {
         "Open your day to clear bays, calm swim stops and the timeless rhythm of the sea with MAVIMARIS.",
       button: "Contact on WhatsApp",
       trust: "Direct contact · Multilingual support",
+      priceFrom: "From",
+      priceUnit: "per person",
     },
     footer: {
       identity: "Marmaris Boat Experience",
@@ -337,6 +339,8 @@ export const translations = {
         "Откройте для себя прозрачные бухты, спокойные остановки для купания и неподвластный времени ритм моря вместе с MAVIMARIS.",
       button: "Написать в WhatsApp",
       trust: "Прямая связь · Поддержка на нескольких языках",
+      priceFrom: "От",
+      priceUnit: "с человека",
     },
     footer: {
       identity: "Морская прогулка в Мармарисе",
@@ -511,6 +515,8 @@ export const translations = {
         "Scopri baie limpide, tranquille soste per nuotare e il ritmo senza tempo del mare con MAVIMARIS.",
       button: "Contattaci su WhatsApp",
       trust: "Contatto diretto · Assistenza multilingue",
+      priceFrom: "Da",
+      priceUnit: "per persona",
     },
     footer: {
       identity: "Esperienza in barca a Marmaris",
@@ -685,6 +691,8 @@ export const translations = {
         "MAVIMARIS ile gününüzü berrak koylara, sakin yüzme molalarına ve denizin zamansız ritmine açın.",
       button: "WhatsApp ile İletişim",
       trust: "Doğrudan iletişim · Çok dilli destek",
+      priceFrom: "Başlangıç",
+      priceUnit: "kişi başı",
     },
     footer: {
       identity: "Marmaris Tekne Deneyimi",

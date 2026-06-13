@@ -13,7 +13,6 @@ import {
 } from "framer-motion";
 import {
   ArrowDown,
-  Camera,
   Check,
   ChevronDown,
   Clock,
@@ -33,7 +32,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { translations } from "@/data/translations";
 
-export const WHATSAPP_NUMBER = "905442701157";
+export const WHATSAPP_NUMBER = "905356187131";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 const navigationKeys = [
@@ -92,11 +91,18 @@ function Reveal({ children, className = "", delay = 0 }) {
   return (
     <motion.div
       className={className}
-      variants={reduceMotion ? undefined : reveal}
-      initial={reduceMotion ? false : "hidden"}
-      whileInView={reduceMotion ? undefined : "visible"}
+      initial={false}
+      whileInView={
+        reduceMotion
+          ? undefined
+          : { opacity: [0.55, 1], y: [18, 0] }
+      }
       viewport={{ once: true, amount: 0.18 }}
-      transition={{ delay }}
+      transition={{
+        duration: 0.68,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
+      }}
     >
       {children}
     </motion.div>
@@ -320,19 +326,37 @@ function Header({ language, setLanguage, t }) {
 }
 
 function Hero({ t }) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
-      <Image
-        src="/images/hero.jpg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="hero-image"
+      <motion.div
+        className="hero-media"
         aria-hidden="true"
-      />
+        animate={
+          reduceMotion
+            ? { scale: 1.03 }
+            : { scale: [1.03, 1.085, 1.03] }
+        }
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <Image
+          src="/images/hero.jpg"
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          className="hero-image"
+        />
+      </motion.div>
       <div className="hero-overlay" aria-hidden="true" />
       <div className="hero-reflection" aria-hidden="true" />
+      <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
+      <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
 
       <div className="hero-content container">
         <h1 id="hero-title">
@@ -375,8 +399,37 @@ function Hero({ t }) {
         <span>{t.hero.scroll}</span>
         <span className="scroll-line" aria-hidden="true" />
       </a>
-      <div className="hero-fade" aria-hidden="true" />
     </section>
+  );
+}
+
+function MotionMarquee({ t }) {
+  const items = [
+    "MAVIMARIS",
+    t.hero.chips[0],
+    t.hero.chips[4],
+    t.route.title,
+    t.hero.chips[1],
+    Array.isArray(t.included.title)
+      ? t.included.title.join(" ")
+      : t.included.title,
+  ];
+
+  return (
+    <div className="motion-marquee" aria-hidden="true">
+      <div className="motion-marquee-track">
+        {[0, 1].map((copy) => (
+          <div className="motion-marquee-group" key={copy}>
+            {items.map((item, index) => (
+              <span className="motion-marquee-item" key={`${copy}-${index}`}>
+                {item}
+                <span className="motion-marquee-dot">•</span>
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -469,19 +522,44 @@ function ExperienceSection({ t }) {
 }
 
 function RouteSection({ t }) {
-  const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 0.7", "end 0.75"],
-  });
-  const scaleY = useSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 26,
-  });
+  const [activeStep, setActiveStep] = useState(0);
+  const routeRef = useRef(null);
+  const draggingRef = useRef(false);
+  const totalStops = t.route.stops.length;
+
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+
+    const interval = window.setInterval(() => {
+      const routeElement = routeRef.current;
+      const isFocused = routeElement?.contains(document.activeElement);
+
+      if (
+        draggingRef.current ||
+        routeElement?.matches(":hover") ||
+        isFocused
+      ) {
+        return;
+      }
+
+      setActiveStep((step) => step + 1);
+    }, 2300);
+
+    return () => window.clearInterval(interval);
+  }, [reduceMotion]);
+
+  const moveCarousel = (direction) => {
+    setActiveStep((step) => step + direction);
+  };
+
+  const visibleSteps = [-2, -1, 0, 1, 2].map(
+    (offset) => activeStep + offset,
+  );
+  const activeStop = ((activeStep % totalStops) + totalStops) % totalStops;
 
   return (
-    <section className="section route-section" id="route" ref={sectionRef}>
+    <section className="section route-section" id="route">
       <div className="container">
         <SectionHeading
           eyebrow={t.route.eyebrow}
@@ -489,55 +567,124 @@ function RouteSection({ t }) {
           intro={t.route.intro}
         />
 
-        <div className="route-timeline">
-          <div className="timeline-track" aria-hidden="true">
-            <motion.div
-              className="timeline-progress"
-              style={reduceMotion ? { scaleY: 1 } : { scaleY }}
-            />
-          </div>
+        <div className="route-coverflow" ref={routeRef}>
+          <motion.div
+            className="route-coverflow-stage"
+            drag={reduceMotion ? false : "x"}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.14}
+            onDragStart={() => {
+              draggingRef.current = true;
+            }}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -45) moveCarousel(1);
+              if (info.offset.x > 45) moveCarousel(-1);
+              draggingRef.current = false;
+            }}
+          >
+            <AnimatePresence initial={false}>
+              {visibleSteps.map((virtualStep) => {
+                const offset = virtualStep - activeStep;
+                const stopIndex =
+                  ((virtualStep % totalStops) + totalStops) % totalStops;
+                const stop = t.route.stops[stopIndex];
+                const isActive = offset === 0;
+                const depth = Math.abs(offset);
 
-          {t.route.stops.map((stop, index) => (
-            <motion.article
-              className="route-card"
-              key={index}
-              initial={reduceMotion ? false : { opacity: 0, y: 38 }}
-              whileInView={
-                reduceMotion ? undefined : { opacity: 1, y: 0 }
-              }
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{
-                duration: 0.65,
-                delay: Math.min(index * 0.04, 0.2),
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              whileHover={
-                reduceMotion
-                  ? undefined
-                  : { y: -6, rotateX: 1.5, rotateY: index % 2 ? -1.5 : 1.5 }
-              }
+                return (
+                  <motion.article
+                    className={`route-coverflow-card ${
+                      isActive ? "is-active" : ""
+                    }`}
+                    key={virtualStep}
+                    initial={
+                      reduceMotion
+                        ? false
+                        : {
+                            x: "166%",
+                            y: 38,
+                            scale: 0.62,
+                            rotateY: -38,
+                            opacity: 0,
+                          }
+                    }
+                    animate={{
+                      x: `${-50 + offset * 72}%`,
+                      y: depth * 18,
+                      scale: isActive ? 1 : depth === 1 ? 0.82 : 0.66,
+                      rotateY: isActive ? 0 : offset < 0 ? 34 : -34,
+                      rotateZ: isActive ? 0 : offset < 0 ? -1.4 : 1.4,
+                      opacity: isActive ? 1 : depth === 1 ? 0.78 : 0.42,
+                      zIndex: 10 - depth,
+                    }}
+                    exit={
+                      reduceMotion
+                        ? undefined
+                        : {
+                            x: "-266%",
+                            y: 48,
+                            scale: 0.58,
+                            rotateY: 40,
+                            opacity: 0,
+                          }
+                    }
+                    transition={{
+                      duration: reduceMotion ? 0 : 1.35,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    aria-hidden={!isActive}
+                  >
+                    <motion.div
+                      className="route-coverflow-card-inner"
+                      whileHover={
+                        reduceMotion
+                          ? undefined
+                          : { scale: 1.035, y: -6 }
+                      }
+                      whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                    >
+                      <Image
+                        src={routeSources[stopIndex]}
+                        alt=""
+                        fill
+                        sizes="(max-width: 760px) 78vw, 48vw"
+                      />
+                      <div className="route-coverflow-shade" aria-hidden="true" />
+                      <div className="route-coverflow-copy">
+                        <div className="route-duration">
+                          <Clock size={15} aria-hidden="true" />
+                          {stop.duration}
+                        </div>
+                        <h3>{stop.name}</h3>
+                        <p>{stop.description}</p>
+                      </div>
+                    </motion.div>
+                  </motion.article>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
+
+          <div className="route-coverflow-controls">
+            <button
+              type="button"
+              onClick={() => moveCarousel(-1)}
+              aria-label="Previous route stop"
             >
-              <span className="timeline-dot" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div className="route-image">
-                <Image
-                  src={routeSources[index]}
-                  alt=""
-                  fill
-                  sizes="(max-width: 760px) 34vw, 220px"
-                />
-              </div>
-              <div className="route-card-copy">
-                <div className="route-duration">
-                  <Clock size={15} aria-hidden="true" />
-                  {stop.duration}
-                </div>
-                <h3>{stop.name}</h3>
-                <p>{stop.description}</p>
-              </div>
-            </motion.article>
-          ))}
+              <ArrowDown aria-hidden="true" />
+            </button>
+            <span aria-live="polite">
+              {String(activeStop + 1).padStart(2, "0")}
+              <small>/ {String(totalStops).padStart(2, "0")}</small>
+            </span>
+            <button
+              type="button"
+              onClick={() => moveCarousel(1)}
+              aria-label="Next route stop"
+            >
+              <ArrowDown aria-hidden="true" />
+            </button>
+          </div>
         </div>
         <p className="route-note">{t.route.note}</p>
       </div>
@@ -610,8 +757,12 @@ function GalleryCard({ src, alt, caption, index }) {
       ref={cardRef}
       className={`gallery-card gallery-card-${index + 1}`}
       style={reduceMotion ? undefined : { y }}
-      initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+      initial={false}
+      whileInView={
+        reduceMotion
+          ? undefined
+          : { opacity: [0.6, 1], scale: [0.97, 1] }
+      }
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
@@ -666,7 +817,7 @@ function BeforeSection({ t }) {
         />
         <motion.ul
           className="before-list"
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, amount: 0.12 }}
           variants={{
@@ -712,11 +863,33 @@ function FinalCta({ t }) {
               <MessageCircle aria-hidden="true" />
               {t.final.button}
             </MagneticLink>
+            <a
+              className="final-phone"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${t.footer.whatsapp}: +90 535 618 71 31`}
+            >
+              <MessageCircle size={17} aria-hidden="true" />
+              +90 535 618 71 31
+            </a>
             <span className="final-trust">
               <Check size={15} aria-hidden="true" />
               {t.final.trust}
             </span>
           </div>
+          <motion.aside
+            className="price-tag"
+            whileHover={{ y: -5, rotate: -1 }}
+            whileTap={{ scale: 0.98 }}
+            aria-label={`${t.final.priceFrom} €17.00, €13.60 ${t.final.priceUnit}`}
+          >
+            <span className="price-tag-from">
+              {t.final.priceFrom} <del>€17.00</del>
+            </span>
+            <strong>€13.60</strong>
+            <span className="price-tag-unit">{t.final.priceUnit}</span>
+          </motion.aside>
         </Reveal>
       </div>
     </section>
@@ -741,16 +914,6 @@ function Footer({ t }) {
           ))}
         </nav>
 
-        <div className="footer-contact">
-          <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">
-            <MessageCircle aria-hidden="true" />
-            {t.footer.whatsapp}
-          </a>
-          <span>
-            <Camera aria-hidden="true" />
-            {t.footer.instagram}
-          </span>
-        </div>
       </div>
       <div className="container footer-bottom">
         <span>
@@ -778,6 +941,7 @@ export default function ExperiencePage() {
       <Header language={language} setLanguage={setLanguage} t={t} />
       <main id="main" tabIndex={-1}>
         <Hero t={t} />
+        <MotionMarquee t={t} />
         <ExperienceSection t={t} />
         <RouteSection t={t} />
         <IncludedSection t={t} />
