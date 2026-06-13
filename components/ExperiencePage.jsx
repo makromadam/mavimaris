@@ -22,7 +22,6 @@ import {
   Pause,
   Play,
   Ship,
-  Sparkles,
   Sun,
   Umbrella,
   Utensils,
@@ -139,11 +138,19 @@ function MagneticLink({ href, children, className = "", ariaLabel }) {
 
 function Header({ language, setLanguage, t }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
+  useEffect(() => {
+    const updateHeader = () => setScrolled(window.scrollY > 72);
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
       <a className="brand-lockup" href="#top" aria-label="MAVIMARIS home">
         <span className="brand-name">MAVIMARIS</span>
         <span className="brand-subtitle">Marmaris Boat Experience</span>
@@ -267,10 +274,6 @@ function Hero({ t }) {
           },
         }}
       >
-        <motion.p className="eyebrow hero-eyebrow" variants={reveal}>
-          <Sparkles size={14} aria-hidden="true" />
-          {t.hero.eyebrow}
-        </motion.p>
         <motion.h1 id="hero-title" variants={reveal}>
           {t.hero.title}
         </motion.h1>
@@ -329,7 +332,11 @@ function SectionHeading({ eyebrow, title, intro, centered = false }) {
   return (
     <Reveal className={`section-heading ${centered ? "centered" : ""}`}>
       <p className="eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+      <h2 className={Array.isArray(title) ? "title-lines" : undefined}>
+        {Array.isArray(title)
+          ? title.map((line) => <span key={line}>{line}</span>)
+          : title}
+      </h2>
       {intro && <p className="section-intro">{intro}</p>}
     </Reveal>
   );

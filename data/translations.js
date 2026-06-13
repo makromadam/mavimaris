@@ -16,7 +16,6 @@ export const translations = {
       contact: "Contact",
     },
     hero: {
-      eyebrow: "Marmaris Boat Experience",
       title: "MAVIMARIS",
       subtitle: "A Timeless Day on Marmaris' Blue Route",
       description:
@@ -113,7 +112,7 @@ export const translations = {
     },
     gallery: {
       eyebrow: "A different view of Marmaris",
-      title: "Moments from the Sea",
+      title: ["Moments from", "the Sea"],
       intro:
         "Blue water, quiet coves and the small moments that make a day offshore feel longer.",
       images: [
@@ -127,7 +126,7 @@ export const translations = {
     },
     before: {
       eyebrow: "Simple preparation",
-      title: "Before You Arrive",
+      title: ["Before", "You", "Arrive"],
       intro:
         "A few small things will help you settle into the day from the moment you step aboard.",
       items: [
@@ -176,7 +175,6 @@ export const translations = {
       contact: "İletişim",
     },
     hero: {
-      eyebrow: "Marmaris Boat Experience",
       title: "MAVIMARIS",
       subtitle: "Marmaris'in Mavi Rotasında Zamansız Bir Gün",
       description:
@@ -288,7 +286,7 @@ export const translations = {
     },
     before: {
       eyebrow: "Küçük hazırlıklar",
-      title: "Gelmeden Önce",
+      title: ["Gelmeden", "Önce"],
       intro:
         "Birkaç küçük hazırlık, tekneye adım attığınız andan itibaren güne rahatça yerleşmenizi sağlar.",
       items: [
