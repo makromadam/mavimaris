@@ -467,6 +467,10 @@ section {
   font-size: clamp(1rem, 1.6vw, 1.15rem);
 }
 
+.hero-description span {
+  display: block;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1392,6 +1396,10 @@ section {
   .hero-description {
     max-width: 35ch;
     font-size: 0.95rem;
+  }
+
+  .hero-description span {
+    text-wrap: balance;
   }
 
   .hero-actions {

@@ -281,7 +281,11 @@ function Hero({ t }) {
           {t.hero.subtitle}
         </motion.p>
         <motion.p className="hero-description" variants={reveal}>
-          {t.hero.description}
+          {Array.isArray(t.hero.description)
+            ? t.hero.description.map((line) => (
+                <span key={line}>{line}</span>
+              ))
+            : t.hero.description}
         </motion.p>
 
         <motion.div className="hero-actions" variants={reveal}>

@@ -18,8 +18,10 @@ export const translations = {
     hero: {
       title: "MAVIMARIS",
       subtitle: "A Timeless Day on Marmaris' Blue Route",
-      description:
-        "A full-day Marmaris boat experience shaped by swim stops, crystal-clear bays, BBQ lunch and the rhythm of the sea.",
+      description: [
+        "A full-day Marmaris boat experience shaped by swim stops,",
+        "crystal‑clear bays, BBQ lunch and the rhythm of the sea.",
+      ],
       explore: "Explore the Route",
       whatsapp: "Contact on WhatsApp",
       chips: [
